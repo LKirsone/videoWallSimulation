@@ -24,10 +24,29 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += \
-        main.cpp \
-        mainwindow.cpp
+    CustomObjects/customgraphicscene.cpp \
+    CustomWidgets/monitor.cpp \
+    Layouts/abstractlayout.cpp \
+    Layouts/abstractsinglemonitorlayout.cpp \
+    Layouts/simulationlayout.cpp \
+    Layouts/videolayout.cpp \
+    Utils/configuration.cpp \
+    Utils/utils.cpp \
+    main.cpp \
+    mainwindow.cpp
+
 
 HEADERS += \
-        mainwindow.h
+    CustomObjects/customgraphicscene.h \
+    CustomWidgets/monitor.h \
+    Layouts/abstractlayout.h \
+    Layouts/abstractsinglemonitorlayout.h \
+    Layouts/simulationlayout.h \
+    Layouts/videolayout.h \
+    Utils/configuration.h \
+    Utils/const.h \
+    Utils/ui_const.h \
+    Utils/utils.h \
+    mainwindow.h
 
 FORMS +=
