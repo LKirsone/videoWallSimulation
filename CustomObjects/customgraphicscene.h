@@ -2,18 +2,17 @@
 #define CUSTOMSCENE_H
 
 #include <QGraphicsScene>
+#include <QPointF>
 #include "CustomWidgets/monitor.h"
 
 class CustomGraphicScene : public QGraphicsScene
 {
     Q_OBJECT
-    Monitor*    ownerMonitor;
 public:
     CustomGraphicScene();
-    CustomGraphicScene(Monitor*);
 
 signals:
-    void        monitorWasSelected(unsigned int row, unsigned int column);
+    void        monitorWasSelected(QPointF point);
 
 protected:
     // doesn't work with mousePressEvent overwritten, so yeah.. for now out!

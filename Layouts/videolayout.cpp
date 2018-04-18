@@ -23,5 +23,14 @@ VideoLayout::VideoLayout(Configuration *config, QObject* simWin)
     }
 }
 
+bool VideoLayout::connectToServer(QString ipAddress)
+{
+    // TODO: prepare bunch of new connects for each monitor
+    return false;
+}
+
 void VideoLayout::generateMonitorMatrice()
+{}
+
+void VideoLayout::contentUpdate()
 {}

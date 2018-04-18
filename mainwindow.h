@@ -5,7 +5,8 @@
 #include <QCloseEvent>
 
 #include "Utils/configuration.h"
-#include "Layouts/simulationlayout.h"
+#include "Layouts/layoutframework.h"
+#include "Communication/communication.h"
 
 class MainWindow : public QMainWindow
 {
@@ -13,8 +14,9 @@ class MainWindow : public QMainWindow
     QWidget*            mainWidget;
 
     Configuration       config;
-    SimulationLayout*   simulationLayout;
+    LayoutFramework*    simulationLayout;
 
+    Communication       communication;
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();

@@ -4,7 +4,7 @@
 
 #include "CustomWidgets/monitor.h"
 
-#include "Layouts/simulationlayout.h"
+#include "Layouts/layoutframework.h"
 #include "Layouts/abstractsinglemonitorlayout.h"
 #include "Layouts/abstractlayout.h"
 #include "Layouts/videolayout.h"
@@ -21,7 +21,7 @@ unsigned int Utils::getMonitorHeight(unsigned int monitorsPerColumn, bool forceR
 
     if(!heightSet || forceReset)
     {
-        QRect rec = QApplication::desktop()->screenGeometry();
+        QRect rec = QApplication::desktop()->screenGeometry(QApplication::desktop()->primaryScreen());
         height = std::floor((rec.height()-HEIGHT_MARGINS)/monitorsPerColumn);
         heightSet = true;
     }
@@ -36,7 +36,7 @@ unsigned int Utils::getMonitorWidth(unsigned int monitorPerRow, bool forceReset)
 
     if(!widthSet || forceReset)
     {
-        QRect rec = QApplication::desktop()->screenGeometry();
+        QRect rec = QApplication::desktop()->screenGeometry(QApplication::desktop()->primaryScreen());
         width = std::floor((rec.width()-WIDTH_MARGINS)/monitorPerRow);
         widthSet = true;
     }
@@ -51,7 +51,7 @@ unsigned int Utils::getEnvironmentWidth()
 
     if(!widthSet)
     {
-        QRect rec = QApplication::desktop()->screenGeometry();
+        QRect rec = QApplication::desktop()->screenGeometry(QApplication::desktop()->primaryScreen());
         width = rec.width() - WIDTH_MARGINS;
         widthSet = true;
     }
@@ -65,26 +65,37 @@ unsigned int Utils::getEnvironmentHeight()
 
     if(!heightSet)
     {
-        QRect rec = QApplication::desktop()->screenGeometry();
+        QRect rec = QApplication::desktop()->screenGeometry(QApplication::desktop()->primaryScreen());
         height = rec.height() - HEIGHT_MARGINS;
         heightSet = true;
     }
     return height;
 }
 
-SimulationLayout* Utils::generateLayout(UniversalType type, Configuration* config, QObject* parent, Monitor* focus)
+Position Utils::translatePointToMonitor(QPointF point, Configuration config)
 {
-    SimulationLayout* layout = NULL;
+    Position pos;
+    if(config.monitorsPerRow && config.monitorsPerColumn)
+    {
+        pos.column = std::floor(point.x() / Utils::getMonitorWidth(config.monitorsPerRow));
+        pos.line = std::floor(point.y() / Utils::getMonitorHeight(config.monitorsPerColumn));
+    }
+    return pos;
+}
+
+LayoutFramework* Utils::generateLayout(UniversalType type, Configuration* config, QObject* parent, Monitor* focus)
+{
+    LayoutFramework* layout = new LayoutFramework(config, parent);
     switch(type)
     {
     case TYPE_ABSTRACT:
-        layout = new AbstractLayout(config, parent);
+        layout->addBody(new AbstractLayout(config, parent));
         break;
     case TYPE_VIDEO:
-        layout = new VideoLayout(config, parent);
+        layout->addBody(new VideoLayout(config, parent));
         break;
     case TYPE_ABSTRACT_SINGLE_MONITOR:
-        layout = new AbstractSingleMonitorLayout(focus, config, parent);
+        layout->addBody(new AbstractSingleMonitorLayout(focus, config, parent));
         break;
     case TYPE_VIDEO_SINGLE_MONITOR:
         //layout = new VideoSingleMonitorLayout(&(simulationLayout->monitorMatrice[config.focusPosition.line][config.focusPosition.line]), config, this);

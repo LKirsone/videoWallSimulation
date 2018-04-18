@@ -1,110 +1,66 @@
 #include "simulationlayout.h"
 
 #include <QCloseEvent>
+#include "layoutframework.h"
 
 SimulationLayout::SimulationLayout(Configuration *cfg, QObject* parent)
     : QObject()
+    , focusedMonitor(NULL)
     , focusLayout(NULL)
     , simulationWindow(parent)
-    , headerLayout(new QHBoxLayout())
     , monitorGridLayout(new QGridLayout())
-    , mainWindowLayout( new QVBoxLayout())
-    , headerGroup(new QGroupBox())
     , monitorMatriceGroup(new QGroupBox())
     , config(cfg)
     , monitorMatrice(NULL)
     , rowsInMonitorMatrice(0)
     , columnsInMonitorMatrice(0)
 {
-    generateHeader();
-
-    mainWindowLayout->addWidget(headerGroup);
-    mainWindowLayout->addWidget(monitorMatriceGroup);
+    connect(this, SIGNAL(monitorClosureDetected()), simulationWindow, SLOT(enableMainWindow()));
+    connect(this, SIGNAL(mainWindowDisabled()), simulationWindow, SLOT(disableMainWindow()));
 }
+
+void SimulationLayout::isConnected()
+{}
+
+void SimulationLayout::isDisconnected()
+{}
+
+void SimulationLayout::onManualUpdate(QDataStream* x)
+{}
 
 SimulationLayout::~SimulationLayout()
 {
+    this->disconnect();
+    monitorGridLayout->disconnect();
+    monitorMatriceGroup->disconnect();
+
     //clearMonitorMatrice();
-    delete uiHeader.selectSimOption;
-    delete uiHeader.startStopSim;
-    delete headerLayout;
     delete monitorGridLayout;
-    delete mainWindowLayout;
-    delete headerGroup;
     delete monitorMatriceGroup;
     delete config;
 }
 
-void SimulationLayout::generateHeader()
+void SimulationLayout::monitorSelected(QPointF point)
 {
-    // simulation type selection
-    uiHeader.selectSimOption = new QComboBox();
-    uiHeader.selectSimOption->addItems(uiHeader.simOptions);
-    headerLayout->addWidget(uiHeader.selectSimOption);
+    // first verify that the monitor position is valid
+    Position monitorPos = Utils::translatePointToMonitor(point, *config);
 
-    // button to start/stop simulation
-    uiHeader.startStopSim = new QPushButton();
-    uiHeader.startStopSim->setText(config->isSimulationRunning ? STRING_STOP : STRING_START);
-    headerLayout->addWidget(uiHeader.startStopSim);
-
-    headerGroup->setFixedHeight(HEADER_HEIGHT);
-    headerGroup->setLayout(headerLayout);
-
-    QObject::connect(uiHeader.startStopSim, SIGNAL(pressed()), this, SLOT(simulationRunningStatusUpdate()));
-    QObject::connect(uiHeader.selectSimOption, SIGNAL(currentTextChanged(QString)), this, SLOT(simulationTypeChanged(QString)));
-}
-
-void SimulationLayout::simulationRunningStatusUpdate(void)
-{
-    if(uiHeader.startStopSim->text() == STRING_START)
-    {
-        uiHeader.startStopSim->setText(STRING_STOP);
-        config->isSimulationRunning = true;
-    }
-    else
-    {
-        uiHeader.startStopSim->setText(STRING_START);
-        config->isSimulationRunning = false;
-    }
-}
-
-void SimulationLayout::simulationTypeChanged(const QString &command_text)
-{
-    if(command_text == ABSTR_SIM_STR)
-    {
-        config->simulationType = TYPE_ABSTRACT;
-    }
-    else if(command_text == VIDEO_SIM_STR)
-    {
-        config->simulationType = TYPE_VIDEO;
-    }
-    else
-    {
-        config->simulationType = TYPE_UNKNOWN;
-    }
-}
-
-
-void SimulationLayout::monitorSelected(unsigned int monitorRow, unsigned int monitorColumn)
-{
-    // first verify that the monitor position is validSamanta1
-
-    if(!focusedMonitor && monitorColumn < columnsInMonitorMatrice && monitorRow < rowsInMonitorMatrice)
+    if(!focusedMonitor && monitorPos.column < columnsInMonitorMatrice && monitorPos.line < rowsInMonitorMatrice)
     {
         config->isMonitorFocused = true;
-        config->focusPosition.line = monitorRow;
-        config->focusPosition.column = monitorColumn;
+        config->focusPosition.line = monitorPos.line;
+        config->focusPosition.column = monitorPos.column;
 
         switch(config->simulationType)
         {
-        case TYPE_ABSTRACT: focusLayout = Utils::generateLayout(TYPE_ABSTRACT_SINGLE_MONITOR, config, simulationWindow, &monitorMatrice[monitorColumn][monitorRow]);   break;
-        case TYPE_VIDEO:    focusLayout = Utils::generateLayout(TYPE_VIDEO_SINGLE_MONITOR, config, simulationWindow, &monitorMatrice[monitorColumn][monitorRow]);      break;
+        case TYPE_ABSTRACT: focusLayout = Utils::generateLayout(TYPE_ABSTRACT_SINGLE_MONITOR, config, simulationWindow, &monitorMatrice[monitorPos.line][monitorPos.column]);   break;
+        case TYPE_VIDEO:    focusLayout = Utils::generateLayout(TYPE_VIDEO_SINGLE_MONITOR, config, simulationWindow, &monitorMatrice[monitorPos.line][monitorPos.column]);      break;
         case TYPE_UNKNOWN:
         default:
             break;
         }
         //FocusSpecificMonitor(focusLayout->getLayout());
-        if(focusLayout->getLayout())
+        if(focusLayout && focusLayout->getLayout())
         {
             focusedMonitor = new Monitor();
             focusedMonitor->setLayout(focusLayout->getLayout());
@@ -115,7 +71,7 @@ void SimulationLayout::monitorSelected(unsigned int monitorRow, unsigned int mon
             // disable current window, as we'll focus the one specific monitor now
             emit mainWindowDisabled();
             connect(focusedMonitor, SIGNAL(monitorClosed()), this, SLOT(focusedMonitorClosed()));
-            connect(this, SIGNAL(monitorClosureDetected()), simulationWindow, SLOT(enableMainWindow()));
+            connect(this, SIGNAL(startManualContentUpdate(QDataStream*)), focusLayout->getContent(), SLOT(onManualUpdate(QDataStream*)));
         }
     }
 }
@@ -124,7 +80,14 @@ void SimulationLayout::focusedMonitorClosed()
 {
     if(focusedMonitor)
     {
+        config->isMonitorFocused = false;
+
+        focusLayout->disconnect();
+        delete focusLayout;
+        focusLayout = NULL;
+
         // clear the object
+        focusedMonitor->disconnect();
         delete focusedMonitor;
         focusedMonitor = NULL;
 
@@ -139,9 +102,20 @@ void SimulationLayout::setDefaultConfig()
     config->monitorsPerColumn = 4;
     config->monitorsPerRow = 4;
     config->isConfigInstalled = true;
+
+    // set by default FHD resolution
+    config->physicalMonitorResolutionX= 1920;
+    config->physicalMonitorResolutionY = 1080;
 }
 
-QVBoxLayout* SimulationLayout::getLayout()
+bool SimulationLayout::connectToServer(QString ipAddress)
 {
-    return mainWindowLayout;
+    // default empty implementation for temporary layouts, when specific monitor is focused
+    // at that cases new connects are not needed, updated will be transmisted from parent layout
+    return false;
+}
+
+QLayout* SimulationLayout::getMatriceLayout() const
+{
+    return monitorGridLayout;
 }

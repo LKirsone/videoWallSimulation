@@ -3,31 +3,28 @@
 
 #include <QHBoxLayout>
 #include <QGroupBox>
+#include <QDataStream>
 
 #include "Utils\configuration.h"
 #include "Utils\utils.h"
 #include "Utils\ui_const.h"
-
 #include "CustomWidgets/monitor.h"
+
+class LayoutFramework;
 
 class SimulationLayout : public QObject
 {
     Q_OBJECT
 
     Monitor*            focusedMonitor;
-    SimulationLayout*   focusLayout;
+    LayoutFramework*    focusLayout;
 protected:
     QObject*            simulationWindow;
 
-    QHBoxLayout*        headerLayout;
     QGridLayout*        monitorGridLayout;
-    QVBoxLayout*        mainWindowLayout;
-
-    QGroupBox*          headerGroup;
     QGroupBox*          monitorMatriceGroup;
 
     Configuration*      config;
-    UI_HeaderData       uiHeader;
 
     Monitor**           monitorMatrice;
     unsigned int        rowsInMonitorMatrice;
@@ -37,25 +34,34 @@ public:
     SimulationLayout(Configuration* config, QObject* parent);
     ~SimulationLayout();
 
-    QVBoxLayout*        getLayout();
-
 signals:
     void                mainWindowDisabled();
     void                mainWindowEnabled();
     void                monitorClosureDetected();
+    void                uiUpdated(ContentUpdateType, QDataStream*);
+    void                invalidIpAddress();
+    void                hasConnect(int connectId); // connect ID only necessary for video simulation
+    void                hasDisconnect(int connectId); // connect ID only necessary for video simulation
+    void                startManualContentUpdate(QDataStream*);
 
 public slots:
-    void                simulationRunningStatusUpdate(void);
-    void                simulationTypeChanged(const QString&);
     void                focusedMonitorClosed();
-    void                monitorSelected(unsigned int monitorRow, unsigned int monitorColumn);
+    void                monitorSelected(QPointF);
+    virtual void        contentUpdate() = 0;
+    virtual void        isConnected();
+    virtual void        isDisconnected();
+    virtual void        onManualUpdate(QDataStream*);
 
 private:
-    void                generateHeader();
 
 protected:
     virtual void        generateMonitorMatrice() = 0;
     virtual void        setDefaultConfig();
+    virtual bool        connectToServer(QString ipAddress);
+
+    QLayout*            getMatriceLayout() const;
+
+    friend class        LayoutFramework;
 };
 
 #endif // SIMULATIONLAYOUT_H

@@ -1,5 +1,6 @@
 #include "CustomWidgets/monitor.h"
 #include <QEvent>
+#include "CustomObjects/customgraphicscene.h"
 
 Monitor::Monitor(QWidget *parent)
     : QWidget(parent)
@@ -15,6 +16,7 @@ Monitor::Monitor(QWidget *parent)
 Monitor::~Monitor()
 {
     //delete contentController;
+    displayPanel->disconnect();
     delete displayPanel;
     delete args;
 }

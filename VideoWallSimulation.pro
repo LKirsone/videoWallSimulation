@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -30,10 +30,13 @@ SOURCES += \
     Layouts/abstractsinglemonitorlayout.cpp \
     Layouts/simulationlayout.cpp \
     Layouts/videolayout.cpp \
+    Layouts/layoutframework.cpp \
     Utils/configuration.cpp \
     Utils/utils.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    Communication/communication.cpp \
+    CustomObjects/customgraphicsitem.cpp
 
 
 HEADERS += \
@@ -42,11 +45,14 @@ HEADERS += \
     Layouts/abstractlayout.h \
     Layouts/abstractsinglemonitorlayout.h \
     Layouts/simulationlayout.h \
+    Layouts/layoutframework.h \
     Layouts/videolayout.h \
     Utils/configuration.h \
     Utils/const.h \
     Utils/ui_const.h \
     Utils/utils.h \
-    mainwindow.h
+    mainwindow.h \
+    Communication/communication.h \
+    CustomObjects/customgraphicsitem.h
 
 FORMS +=

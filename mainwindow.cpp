@@ -6,6 +6,7 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , simulationLayout()
+    , communication()
 {
     // TEMP VALUES, while config file is not used and parsed
     config.isConfigInstalled = true;
@@ -14,11 +15,14 @@ MainWindow::MainWindow(QWidget *parent)
     simulationLayout = Utils::generateLayout(config.simulationType, &config, this);
     if(simulationLayout)
     {
-        connect(simulationLayout, SIGNAL(mainWindowDisabled()), this, SLOT(disableMainWindow()));
-        connect(simulationLayout, SIGNAL(mainWindowEnabled()), this, SLOT(enableMainWindow()));
-        mainWidget = new QWidget();
-        mainWidget->setLayout(simulationLayout->getLayout());
-        mainWidget->updateGeometry();
+        SimulationLayout* content = simulationLayout->getContent();
+        if(content)
+        {
+            connect(content, SIGNAL(mainWindowDisabled()), this, SLOT(disableMainWindow()));
+            mainWidget = new QWidget();
+            mainWidget->setLayout(simulationLayout->getLayout());
+            mainWidget->updateGeometry();
+        }
     }
     setCentralWidget(mainWidget);
 }

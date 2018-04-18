@@ -4,6 +4,8 @@
 #include <QWidget>
 #include "Utils/const.h"
 
+class CustomGraphicScene;
+
 class Monitor : public QWidget
 {
     Q_OBJECT
@@ -12,6 +14,7 @@ protected:
     QWidget*            displayPanel;
     QString             ipAddress;
     Position            positionInMatrice;
+    QPointF             monitorPosition;
     void*               args; // pointer to possibly necessary parameters depending on monitor use
 
 public:
