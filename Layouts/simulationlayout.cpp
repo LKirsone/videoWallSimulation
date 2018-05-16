@@ -1,9 +1,11 @@
 #include "simulationlayout.h"
 
 #include <QCloseEvent>
+#include <QThreadPool>
 #include "layoutframework.h"
+#include <qlogging.h>
 
-SimulationLayout::SimulationLayout(Configuration *cfg, QObject* parent)
+SimulationLayout::SimulationLayout(Configuration *cfg, QObject* parent, QWidget* uiWidget)
     : QObject()
     , focusedMonitor(NULL)
     , focusLayout(NULL)
@@ -14,6 +16,7 @@ SimulationLayout::SimulationLayout(Configuration *cfg, QObject* parent)
     , monitorMatrice(NULL)
     , rowsInMonitorMatrice(0)
     , columnsInMonitorMatrice(0)
+    , mainUiWidget(uiWidget)
 {
     connect(this, SIGNAL(monitorClosureDetected()), simulationWindow, SLOT(enableMainWindow()));
     connect(this, SIGNAL(mainWindowDisabled()), simulationWindow, SLOT(disableMainWindow()));
@@ -53,8 +56,8 @@ void SimulationLayout::monitorSelected(QPointF point)
 
         switch(config->simulationType)
         {
-        case TYPE_ABSTRACT: focusLayout = Utils::generateLayout(TYPE_ABSTRACT_SINGLE_MONITOR, config, simulationWindow, &monitorMatrice[monitorPos.line][monitorPos.column]);   break;
-        case TYPE_VIDEO:    focusLayout = Utils::generateLayout(TYPE_VIDEO_SINGLE_MONITOR, config, simulationWindow, &monitorMatrice[monitorPos.line][monitorPos.column]);      break;
+        case TYPE_ABSTRACT: focusLayout = Utils::generateLayout(TYPE_ABSTRACT_SINGLE_MONITOR, config, simulationWindow, mainUiWidget, &monitorMatrice[monitorPos.line][monitorPos.column]);   break;
+        case TYPE_VIDEO:    focusLayout = Utils::generateLayout(TYPE_VIDEO_SINGLE_MONITOR, config, simulationWindow, mainUiWidget, &monitorMatrice[monitorPos.line][monitorPos.column]);      break;
         case TYPE_UNKNOWN:
         default:
             break;
@@ -91,6 +94,11 @@ void SimulationLayout::focusedMonitorClosed()
         delete focusedMonitor;
         focusedMonitor = NULL;
 
+        //monitorMatrice[config->focusPosition.column][config->focusPosition.line].displayPanel->
+
+        config->focusPosition.line = 0;
+        config->focusPosition.column = 0;
+
         // pass the data to main window, so it can re-enable the UI
         emit monitorClosureDetected();
     }
@@ -106,6 +114,8 @@ void SimulationLayout::setDefaultConfig()
     // set by default FHD resolution
     config->physicalMonitorResolutionX= 1920;
     config->physicalMonitorResolutionY = 1080;
+
+    QThreadPool::globalInstance()->setMaxThreadCount((config->monitorsPerColumn + config->monitorsPerRow)*5);
 }
 
 bool SimulationLayout::connectToServer(QString ipAddress)

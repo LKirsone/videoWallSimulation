@@ -10,16 +10,17 @@ MainWindow::MainWindow(QWidget *parent)
 {
     // TEMP VALUES, while config file is not used and parsed
     config.isConfigInstalled = true;
-    config.simulationType = TYPE_ABSTRACT;
+    config.simulationType =  TYPE_VIDEO; // TYPE_ABSTRACT;
 
-    simulationLayout = Utils::generateLayout(config.simulationType, &config, this);
+    mainWidget = new QWidget();
+
+    simulationLayout = Utils::generateLayout(config.simulationType, &config, this, mainWidget);
     if(simulationLayout)
     {
         SimulationLayout* content = simulationLayout->getContent();
         if(content)
         {
             connect(content, SIGNAL(mainWindowDisabled()), this, SLOT(disableMainWindow()));
-            mainWidget = new QWidget();
             mainWidget->setLayout(simulationLayout->getLayout());
             mainWidget->updateGeometry();
         }

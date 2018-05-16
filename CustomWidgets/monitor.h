@@ -12,7 +12,7 @@ class Monitor : public QWidget
 protected:
     //ContentController*  contentController;
     QWidget*            displayPanel;
-    QString             ipAddress;
+    QString             url;
     Position            positionInMatrice;
     QPointF             monitorPosition;
     void*               args; // pointer to possibly necessary parameters depending on monitor use
@@ -31,7 +31,7 @@ private:
     friend class AbstractLayout;
     friend class AbstractSingleMonitorLayout;
     friend class VideoLayout;
-    friend class VideoSingleMonitorLayout;
+    friend class VideoSignleMonitorLayout;
     friend class SimulationLayout;
     friend class CustomGraphicScene;
 };

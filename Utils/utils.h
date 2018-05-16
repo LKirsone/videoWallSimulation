@@ -19,11 +19,11 @@ public:
     Utils();
     static unsigned int     getMonitorWidth(unsigned int, bool forceReset = false);
     static unsigned int     getMonitorHeight(unsigned int,bool forceReset = false);
-    static unsigned int     getEnvironmentWidth();
-    static unsigned int     getEnvironmentHeight();
+    static unsigned int     getEnvironmentWidth(bool noPadding = false);
+    static unsigned int     getEnvironmentHeight(bool noPadding = false);
 
     static Position         translatePointToMonitor(QPointF point, Configuration config);
-    static LayoutFramework* generateLayout(UniversalType type, Configuration* config, QObject* parent, Monitor* focus = NULL);
+    static LayoutFramework* generateLayout(UniversalType type, Configuration* config, QObject* parent, QWidget* uiWidget, Monitor* focus = NULL);
 };
 
 #endif // UTILS_H

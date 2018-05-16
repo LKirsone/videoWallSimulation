@@ -12,7 +12,7 @@ class AbstractSingleMonitorLayout : public AbstractLayout
     float               monitorPositionX;
     float               monitorPositionY;
 public:
-    AbstractSingleMonitorLayout(Monitor*,Configuration*, QObject*);
+    AbstractSingleMonitorLayout(Monitor*,Configuration*, QObject*, QWidget* uiWidget);
     ~AbstractSingleMonitorLayout();
 
 public slots:

@@ -15,7 +15,7 @@ protected:
     QTcpSocket*         connect;
     CustomGraphicScene* m_graphScene;
 public:
-    AbstractLayout(Configuration*, QObject* simWin);
+    AbstractLayout(Configuration*, QObject* simWin, QWidget* uiWidget);
     ~AbstractLayout();
 
 signals:

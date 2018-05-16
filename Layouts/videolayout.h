@@ -6,9 +6,9 @@
 
 class VideoLayout : public SimulationLayout
 {
-    QList<QTcpSocket>   commProfileList;
+    QList<QTcpSocket>   commProfileList; // not in use
 public:
-    VideoLayout(Configuration*, QObject* simWin);
+    VideoLayout(Configuration*, QObject* simWin, QWidget* uiWidget);
 
 signals:
 public slots:

@@ -30,8 +30,10 @@ protected:
     unsigned int        rowsInMonitorMatrice;
     unsigned int        columnsInMonitorMatrice;
 
+    QWidget*            mainUiWidget;
+
 public:
-    SimulationLayout(Configuration* config, QObject* parent);
+    SimulationLayout(Configuration* config, QObject* parent, QWidget* uiWidget);
     ~SimulationLayout();
 
 signals:

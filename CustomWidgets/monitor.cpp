@@ -10,7 +10,7 @@ Monitor::Monitor(QWidget *parent)
     args = NULL;
     positionInMatrice.line = 0;
     positionInMatrice.column = 0;
-    ipAddress = "";
+    url = "";
 }
 
 Monitor::~Monitor()

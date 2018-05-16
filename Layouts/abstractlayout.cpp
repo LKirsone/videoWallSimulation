@@ -7,8 +7,8 @@
 #include "CustomObjects/customgraphicsitem.h"
 
 
-AbstractLayout::AbstractLayout(Configuration *config, QObject* simWin)
-    : SimulationLayout(config, simWin)
+AbstractLayout::AbstractLayout(Configuration *config, QObject* simWin, QWidget *uiWidget)
+    : SimulationLayout(config, simWin, uiWidget)
     , connect(new QTcpSocket())
     , singleScreenWidthRatio(0)
     , singleScreenHeightRatio(0)
@@ -107,7 +107,7 @@ void AbstractLayout::generateMonitorMatrice()
             displayPanel->setVerticalScrollBarPolicy ( Qt::ScrollBarAlwaysOff );
             displayPanel->setHorizontalScrollBarPolicy ( Qt::ScrollBarAlwaysOff );
             //monitorMatrice[i][j].contentController = new AbstractContentController(monitorMatrice[i][j].displayPanel);
-            monitorMatrice[i][j].ipAddress = "";
+            monitorMatrice[i][j].url = "";
             monitorMatrice[i][j].positionInMatrice.line = i;
             monitorMatrice[i][j].positionInMatrice.column = j;
 

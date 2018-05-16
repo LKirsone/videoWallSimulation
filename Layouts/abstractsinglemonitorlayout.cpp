@@ -5,8 +5,8 @@
 #include "CustomObjects/customgraphicscene.h"
 #include "CustomObjects/customgraphicsitem.h"
 
-AbstractSingleMonitorLayout::AbstractSingleMonitorLayout(Monitor* monitor, Configuration *config, QObject* simWin)
-    : AbstractLayout(config, simWin)
+AbstractSingleMonitorLayout::AbstractSingleMonitorLayout(Monitor* monitor, Configuration *config, QObject* simWin, QWidget *uiWidget)
+    : AbstractLayout(config, simWin, uiWidget)
     , focusedMonitor(monitor)
 {
     if(focusedMonitor && config->physicalMonitorResolutionX && config->physicalMonitorResolutionY)
