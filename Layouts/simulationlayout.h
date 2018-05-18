@@ -10,6 +10,8 @@
 #include "Utils\ui_const.h"
 #include "CustomWidgets/monitor.h"
 
+#include <AVError.h>
+
 class LayoutFramework;
 
 class SimulationLayout : public QObject
@@ -53,6 +55,11 @@ public slots:
     virtual void        isConnected();
     virtual void        isDisconnected();
     virtual void        onManualUpdate(QDataStream*);
+
+    void error(const QtAV::AVError& e); //explictly use QtAV::AVError in connection for Qt4 syntax
+    void paused(bool p);
+    void started();
+    void stopped();
 
 private:
 

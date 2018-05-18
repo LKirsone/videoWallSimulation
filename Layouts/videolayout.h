@@ -3,6 +3,7 @@
 
 #include <QTcpSocket>
 #include "simulationlayout.h"
+#include <AVError.h>
 
 class VideoLayout : public SimulationLayout
 {

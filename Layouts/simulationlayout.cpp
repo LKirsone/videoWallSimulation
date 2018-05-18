@@ -4,6 +4,7 @@
 #include <QThreadPool>
 #include "layoutframework.h"
 #include <qlogging.h>
+#include <qdebug.h>
 
 SimulationLayout::SimulationLayout(Configuration *cfg, QObject* parent, QWidget* uiWidget)
     : QObject()
@@ -107,8 +108,8 @@ void SimulationLayout::focusedMonitorClosed()
 void SimulationLayout::setDefaultConfig()
 {
     config->isSimulationRunning = false;
-    config->monitorsPerColumn = 4;
-    config->monitorsPerRow = 4;
+    config->monitorsPerColumn = 1;
+    config->monitorsPerRow = 1;
     config->isConfigInstalled = true;
 
     // set by default FHD resolution
@@ -123,6 +124,26 @@ bool SimulationLayout::connectToServer(QString ipAddress)
     // default empty implementation for temporary layouts, when specific monitor is focused
     // at that cases new connects are not needed, updated will be transmisted from parent layout
     return false;
+}
+
+void SimulationLayout::error(const QtAV::AVError& e) //explictly use QtAV::AVError in connection for Qt4 syntax
+{
+    qInfo() << "ERROR: " << e.string();
+}
+
+void SimulationLayout::paused(bool p)
+{
+    qInfo() << "paused: " << p;
+}
+
+void SimulationLayout::started()
+{
+    qInfo() << "Started";
+}
+
+void SimulationLayout::stopped()
+{
+    qInfo() << "Stopped";
 }
 
 QLayout* SimulationLayout::getMatriceLayout() const

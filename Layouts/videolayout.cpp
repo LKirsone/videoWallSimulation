@@ -40,7 +40,7 @@ VideoLayout::VideoLayout(Configuration *config, QObject* simWin, QWidget *uiWidg
 
 bool VideoLayout::connectToServer(QString ipAddress)
 {
-#define ONE_BY_ONE_TEST
+//#define ONE_BY_ONE_TEST
 #ifdef ONE_BY_ONE_TEST
     static int i = 0;
     static int j = 0;
@@ -141,7 +141,7 @@ void VideoLayout::generateMonitorMatrice()
 
             //vcodec_opt["vcodec"] = "libx264";
             opt["strict"] = "strict";
-            opt["preset"] = "veryslow";
+            opt["preset"] = "faster";
             //opt["scale"] = "scale=w=300:h=200:force_original_aspect_ratio=decrease";
 
             //opt["acodec"] = "copy";
@@ -152,18 +152,28 @@ void VideoLayout::generateMonitorMatrice()
             qInfo() << "Source ratio " << videoRenderer->renderer->sourceAspectRatio();
             videoRenderer->player->setOptionsForFormat(opt);
             videoRenderer->player->audio()->setMute(true);
+#define TEST_SERVER
+#ifdef TEST_SERVER
+            videoRenderer->sourceUrl = QString("D:/MagDarbs/SourceCode/VideoWallSimulation/ServerCfg/server/test%1.sdp").arg((i*config->monitorsPerRow)+j);
+#else
             videoRenderer->sourceUrl = QString("C:/simulation/SourceCode/VideoWallSimulation/ServerCfg/saved_sdp_file%1").arg((i*config->monitorsPerRow)+j);
+#endif
 #endif
             qInfo() << videoRenderer->sourceUrl;
 
             videoRenderer->player->setRenderer(videoRenderer->renderer);
 
             QObject::connect(videoRenderer, SIGNAL(monitorWasSelected(QPointF)), this, SLOT(monitorSelected(QPointF)));
+            QObject::connect(videoRenderer->player, SIGNAL(error(QtAV::AVError)), this, SLOT(error(QtAV::AVError)));
+            QObject::connect(videoRenderer->player, SIGNAL(started()), this, SLOT(started()));
+            QObject::connect(videoRenderer->player, SIGNAL(paused(bool)), this, SLOT(paused(bool)));
+            QObject::connect(videoRenderer->player, SIGNAL(stopped()), this, SLOT(stopped()));
         }
     }
 
     monitorMatriceGroup->setLayout(monitorGridLayout);
 }
+
 
 void VideoLayout::contentUpdate()
 {
