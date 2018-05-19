@@ -32,16 +32,16 @@ void AbstractSingleMonitorLayout::onManualUpdate(QDataStream* dataStream)
 {
     if(dataStream)
     {
-        int type;
+        // endians controlled in AbstractLayout, which pass data here
+        int type = 0;
+        int desktopWidth = 0;
+        int desktopHeight = 0;
 
         *dataStream >> type;
 
         // Sends data about windows
         if (type == MT_CONFIG)
         {
-            int desktopWidth = 0;
-            int desktopHeight = 0;
-
             // currently not actually used....
             *dataStream >> desktopWidth >> desktopHeight;
 

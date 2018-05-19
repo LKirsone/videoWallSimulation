@@ -10,7 +10,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     // TEMP VALUES, while config file is not used and parsed
     config.isConfigInstalled = true;
-    config.simulationType =  TYPE_VIDEO; // TYPE_ABSTRACT;
+    config.simulationType =   TYPE_ABSTRACT; // TYPE_VIDEO
 
     mainWidget = new QWidget();
 

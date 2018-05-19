@@ -108,8 +108,8 @@ void SimulationLayout::focusedMonitorClosed()
 void SimulationLayout::setDefaultConfig()
 {
     config->isSimulationRunning = false;
-    config->monitorsPerColumn = 1;
-    config->monitorsPerRow = 1;
+    config->monitorsPerColumn = 2;
+    config->monitorsPerRow = 2;
     config->isConfigInstalled = true;
 
     // set by default FHD resolution

@@ -6,6 +6,11 @@
 #include "CustomObjects/customgraphicscene.h"
 #include "CustomObjects/customgraphicsitem.h"
 
+//#define CONTROL_BITE_ORDER <- don't use it, because QT handles the byte order in it's core
+#ifdef CONTROL_BITE_ORDER
+#include <QtEndian>
+#endif
+
 
 AbstractLayout::AbstractLayout(Configuration *config, QObject* simWin, QWidget *uiWidget)
     : SimulationLayout(config, simWin, uiWidget)
@@ -181,7 +186,24 @@ void AbstractLayout::contentUpdate()
 {
     // data available to be read
     QDataStream dataStream(connect->readAll());
-    int type;
+    int type = 0;
+    int desktopWidth = 0;
+    int desktopHeight = 0;
+
+#ifdef CONTROL_BITE_ORDER
+    static QDataStream::ByteOrder currentByteOrder = QSysInfo::ByteOrder == QSysInfo::LittleEndian
+                                                ? QDataStream::LittleEndian
+                                                : QDataStream::BigEndian;
+
+    static bool validateEndians = dataStream.byteOrder() != currentByteOrder;
+
+    if(validateEndians)
+    {
+        qInfo() << "byte order must be changed" << dataStream.byteOrder() << " != " << currentByteOrder;
+        dataStream.setByteOrder(currentByteOrder);
+    }
+
+#endif
 
     if(config->isMonitorFocused)
     {
@@ -189,16 +211,16 @@ void AbstractLayout::contentUpdate()
     }
     else
     {
-        dataStream >> type;
+        dataStream >> type;        
 
         // Sends data about windows
         if (type == MT_CONFIG)
         {
-            int desktopWidth = 0;
-            int desktopHeight = 0;
 
             // currently not actually used....
             dataStream >> desktopWidth >> desktopHeight;
+
+            qInfo() << "desktop width: " << desktopWidth << " desktop height " << desktopHeight;
 
             windowsList.clear();
 
@@ -208,6 +230,8 @@ void AbstractLayout::contentUpdate()
                 int hwnd = -1;
                 int left, top, right, bottom;
                 dataStream >> hwnd >> left >> top >> right >> bottom;
+
+                qInfo() << "hwnd " << hwnd  << " left " << left << " top " << top  << " right " << right << " bottom " << bottom;;
 
                 ClientWindow tmp;
                 dataStream.readRawData(tmp.m_title, 255);

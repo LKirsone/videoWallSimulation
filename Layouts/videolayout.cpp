@@ -152,11 +152,11 @@ void VideoLayout::generateMonitorMatrice()
             qInfo() << "Source ratio " << videoRenderer->renderer->sourceAspectRatio();
             videoRenderer->player->setOptionsForFormat(opt);
             videoRenderer->player->audio()->setMute(true);
-#define TEST_SERVER
+//#define TEST_SERVER
 #ifdef TEST_SERVER
             videoRenderer->sourceUrl = QString("D:/MagDarbs/SourceCode/VideoWallSimulation/ServerCfg/server/test%1.sdp").arg((i*config->monitorsPerRow)+j);
 #else
-            videoRenderer->sourceUrl = QString("C:/simulation/SourceCode/VideoWallSimulation/ServerCfg/saved_sdp_file%1").arg((i*config->monitorsPerRow)+j);
+            videoRenderer->sourceUrl = QString("D:/MagDarbs/SourceCode/VideoWallSimulation/ServerCfg/saved_sdp_file%1").arg((i*config->monitorsPerRow)+j);
 #endif
 #endif
             qInfo() << videoRenderer->sourceUrl;
